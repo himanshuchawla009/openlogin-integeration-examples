@@ -23,6 +23,7 @@ function Login() {
             <option value="ethereum">Ethereum</option>
             <option value="solana">Solana</option>
             <option value="binance">Binance</option>
+            <option value="polygon">Polygon</option>
         </select>
         <div onClick={handleLogin} className="btn">
           Login
