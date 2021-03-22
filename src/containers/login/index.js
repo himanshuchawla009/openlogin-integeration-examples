@@ -12,7 +12,7 @@ function Login() {
     const sdkInstance = new OpenLogin({ clientId: verifiers.google.clientId, iframeUrl: "http://beta.openlogin.com" });
     await sdkInstance.login({
       loginProvider: "google",
-      redirectUrl: `${window.origin}/solana`,
+      redirectUrl: `${window.origin}/ethereum`,
     });
   }
   return (

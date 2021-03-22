@@ -17,7 +17,7 @@ function Solana() {
   const [sdk, setSdk] = useState(undefined);
   const [account, setUserAccount] = useState(null);
   const [accountInfo, setUserAccountInfo] = useState(null);
-  
+  const [solanaPrivateKey, setPrivateKey] = useState(null)
   const history = useHistory();
   useEffect(() => {
     async function initializeOpenlogin() {
@@ -32,6 +32,7 @@ function Solana() {
       const privateKey = sdkInstance.privKey;
       const solanaPrivateKey = nacl.sign.keyPair.fromSeed(fromHexString(privateKey.padStart(64, 0))).secretKey;
       const account = new Account(solanaPrivateKey);
+      setPrivateKey(solanaPrivateKey);
       const accountInfo = await getAccountInfo(solanaNetwork.url, account.publicKey);
       setUserAccount(account);
       setUserAccountInfo(accountInfo);
@@ -67,13 +68,15 @@ function Solana() {
         <div className="container">
           <div style={{ display: "flex", flexDirection: "column", width: "100%", justifyContent: "center", alignItems: "center", margin: 20 }}>
             <div style={{margin:20}}>
-              Account address: <i>{account?.publicKey.toBase58()}</i>
+              Wallet address: <i>{account?.publicKey.toBase58()}</i>
             </div>
             <div style={{margin:20}}>
               Balance: <i>{(accountInfo && accountInfo.lamports) || 0}</i>
             </div>
-            <div style={{margin:20}}>
-              Private key: <i>{(sdk && sdk.privKey)}</i>
+            <hr/>
+            <span>Private key:</span>
+            <div style={{margin:20, maxWidth: 800, wordWrap: "break-word"}}>
+               <span style={{margin: 20}}>{(solanaPrivateKey)}</span>
             </div>
           </div>
         </div>
