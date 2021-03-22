@@ -17,6 +17,7 @@ function Solana() {
   const [sdk, setSdk] = useState(undefined);
   const [account, setUserAccount] = useState(null);
   const [accountInfo, setUserAccountInfo] = useState(null);
+  
   const history = useHistory();
   useEffect(() => {
     async function initializeOpenlogin() {
@@ -31,21 +32,14 @@ function Solana() {
       const privateKey = sdkInstance.privKey;
       const solanaPrivateKey = nacl.sign.keyPair.fromSeed(fromHexString(privateKey.padStart(64, 0))).secretKey;
       const account = new Account(solanaPrivateKey);
-      console.log(bs58.encode(account.secretKey), "secret key");
+      const accountInfo = await getAccountInfo(solanaNetwork.url, account.publicKey);
       setUserAccount(account);
-      updateAccountInfo();
+      setUserAccountInfo(accountInfo);
       setSdk(sdkInstance);
     }
     initializeOpenlogin();
   }, []);
 
-
-
-  const updateAccountInfo = async () => {
-    if (!account) return;
-    const accountInfo = await getAccountInfo(solanaNetwork.url, account.publicKey);
-    setUserAccountInfo(accountInfo);
-  };
 
   const getAccountInfo = async(connectionUrl, publicKey) => {
     const connection = new Connection(connectionUrl, "recent");
@@ -73,10 +67,13 @@ function Solana() {
         <div className="container">
           <div style={{ display: "flex", flexDirection: "column", width: "100%", justifyContent: "center", alignItems: "center", margin: 20 }}>
             <div style={{margin:20}}>
-              Account: <i>{account?.publicKey.toBase58()}</i>
+              Account address: <i>{account?.publicKey.toBase58()}</i>
             </div>
             <div style={{margin:20}}>
               Balance: <i>{(accountInfo && accountInfo.lamports) || 0}</i>
+            </div>
+            <div style={{margin:20}}>
+              Private key: <i>{(sdk && sdk.privKey)}</i>
             </div>
           </div>
         </div>
