@@ -7,18 +7,23 @@ import { verifiers } from "../../utils/config";
 import "./style.scss";
 
 function Login() {
-  const history = useHistory();
+  const [chain, setChain] = useState("ethereum");
   async function handleLogin() {
     const sdkInstance = new OpenLogin({ clientId: verifiers.google.clientId, iframeUrl: "http://beta.openlogin.com" });
     await sdkInstance.login({
       loginProvider: "google",
-      redirectUrl: `${window.origin}/ethereum`,
+      redirectUrl: `${window.origin}/${chain}`,
     });
   }
   return (
     <div className="loginContainer">
       <div className="loginContainer">
         <h1 style={{ textAlign: "center" }}>Openlogin integeration demo for multiple blockchains</h1>
+        <select style={{ margin: 30 }} name="buildEnv" value={chain} onChange={(e)=>setChain(e.target.value)}>
+            <option value="ethereum">Ethereum</option>
+            <option value="solana">Solana</option>
+            <option value="binance">Binance</option>
+        </select>
         <div onClick={handleLogin} className="btn">
           Login
         </div>

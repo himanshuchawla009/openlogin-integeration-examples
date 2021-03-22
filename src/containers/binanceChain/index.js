@@ -1,20 +1,21 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState, useCallback } from "react";
 import OpenLogin from "@toruslabs/openlogin";
-import { ethers } from "ethers";
+import Web3 from "web3";
 import { PageHeader, Button } from "antd";
 import { useHistory } from "react-router";
 import { verifiers } from "../../utils/config";
 import "./style.scss";
 
 
-function Ethereum() {
+function BinanceChain() {
   const [loading, setLoading] = useState(false);
   const [sdk, setSdk] = useState(undefined);
   const [accountInfo, setUserAccountInfo] = useState(null);
   
   const history = useHistory();
   useEffect(() => {
+    const web3 = new Web3('https://bsc-dataseed1.binance.org:443');
     async function initializeOpenlogin() {
       setLoading(true)
       const sdkInstance = new OpenLogin({ clientId: verifiers.google.clientId, iframeUrl: "http://beta.openlogin.com" });
@@ -22,17 +23,17 @@ function Ethereum() {
       if (!sdkInstance.privKey) {
         await sdkInstance.login({
           loginProvider: "google",
-          redirectUrl: `${window.origin}/ethereum`,
+          redirectUrl: `${window.origin}/binance`,
         });
       }
-      let provider = ethers.getDefaultProvider();
-      let wallet = new ethers.Wallet(sdkInstance.privKey, provider);
-      let balance = await wallet.getBalance();
-      let address = await wallet.getAddress();
+      const account = web3.eth.accounts.privateKeyToAccount(sdkInstance.privKey)
+      let balance = await web3.eth.getBalance(account.address);
+      let address = account.address;
       setUserAccountInfo({balance, address});
       setSdk(sdkInstance);
       setLoading(false)
     }
+    
     initializeOpenlogin();
   }, []);
 
@@ -45,7 +46,7 @@ function Ethereum() {
     <div>
       <PageHeader
         className="site-page-header"
-        title="Ethereum example with openlogin"
+        title="Binance smart chain example with openlogin"
         extra={[
           <Button key="1" type="primary" onClick={handleLogout}>
             Logout
@@ -67,7 +68,7 @@ function Ethereum() {
               Wallet address: <i>{accountInfo?.address}</i>
             </div>
             <div style={{margin:20}}>
-              Balance: <i>{accountInfo?.balance?.toNumber()}</i>
+              Balance: <i>{accountInfo?.balance}</i>
             </div>
             <div style={{margin:20}}>
               Private key: <i>{(sdk && sdk.privKey)}</i>
@@ -81,4 +82,4 @@ function Ethereum() {
   );
 }
 
-export default Ethereum;
+export default BinanceChain;
